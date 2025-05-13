@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: "Zodiak";
+    src: url("/fonts/Zodiak-Variable.ttf");
+}
+
+body {
+    font-family: "Zodiak", serif;
+}
+
+.container {
+    max-width: 1200px !important;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+    scrollbar-width: auto;
+    /* scrollbar-color: #365925 #dae4cb; */
+    scrollbar-color: #365925 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 15px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #365925;
+    border-radius: 10px;
+    border: 0px solid #ffffff;
+}
+
+.black-div-1 {
+    position: relative;
+    padding: 50px 20px;
+    color: white;
+    z-index: 1;
+    overflow: hidden;
+    background: linear-gradient(0deg, rgba(4, 12, 24, 0.50) 63.19%, rgba(0, 0, 0, 0.00) 100%);
+}
+
+.black-div-2 {
+    position: relative;
+    padding: 50px 20px;
+    color: white;
+    z-index: 1;
+    overflow: hidden;
+    background: linear-gradient(0deg, rgba(4, 12, 24, 0.50) 63.19%, rgba(0, 0, 0, 0.00) 100%);
+}
+
+.black-div-3 {
+    position: relative;
+    padding: 50px 20px;
+    color: white;
+    z-index: 1;
+    overflow: hidden;
+    background: linear-gradient(0deg, rgba(4, 12, 24, 0.50) 63.19%, rgba(0, 0, 0, 0.00) 100%);
+}
+
+/* add the code bellow */ 
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+   /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+  }
+}
+
+
+/* .black-div-logo {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0) -6.06%, rgba(255, 255, 255, 0.3) 16.52%, rgba(255, 255, 255, 0.3) 84.27%, rgba(255, 255, 255, 0) 106.86%);
+} */
+
+/* ===== HTML Parser CSS ===== */
+.html-parser{
+    overflow-y: auto;
+}
+
+.html-parser p {
+    font-size: 14px;
+    overflow-y: auto;
+}
+
+.html-parser h1 {
+    display: block;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.html-parser h2 {
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.html-parser h3 {
+    display: block;
+    font-size: 1.17em;
+    font-weight: bold;
+}
+
+.html-parser h4 {
+    display: block;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.html-parser h5 {
+    display: block;
+    font-size: .83em;
+    font-weight: bold;
+}
+
+.html-parser h6 {
+    display: block;
+    font-size: .67em;
+    font-weight: bold;
+}
+
+/* Image gallery classes */
+
+.image-gallery-slide img {
+    width: 30vw !important;
+    height: 40vh !important;
+    margin-left: auto;
+    margin-right: auto;
+}
