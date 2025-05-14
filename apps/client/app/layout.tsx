@@ -1,121 +1,59 @@
-import 'styles/global.css'
-import './globals.css'
+"use client";
 
-// import { ThemeProvider } from "next-themes";
+import "@/packages/styles/global.css";
+import "./globals.css";
+
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import Script from "next/script";
+import type { AppProps } from "next/app";
+
+//TODO: See whether needs replacing, if yes, replace
+import { parseCookies } from "nookies";
+//TODO: Replace with Sonner
 import { Toaster } from "react-hot-toast";
+//TODO: replace with Framer Motion or something similar
 import Aos from "aos";
 import "aos/dist/aos.css";
-import * as fbq from "@/lib/fpixel";
-import Script from "next/script";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { parseCookies } from "nookies";
 
+export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
 
-export default function App({
-    Component,
-    pageProps: { session, ...pageProps },
-}) {
+  useEffect(() => {
     if (typeof window !== "undefined") {
-        Aos.init();
+      Aos.init();
+
+      const user = JSON.parse(parseCookies().user || "null");
+
+      if (!user && process.env.NEXT_PUBLIC_ENABLE_UMAMI === "true") {
+        if (window.umami) {
+          window.umami.identify({ id: user?._id, email: user?.email });
+        }
+      }
     }
+  }, []);
 
-    const router = useRouter();
-        useEffect(() => {
-            let user = JSON.parse(parseCookies().user || null);
-            if (!user) {
-                if (process.env.NEXT_PUBLIC_ENABLE_UMAMI === "true") {
-                  if (window.umami) {
-                    umami.identify({ id: user?._id, email: user?.email });
-                  }
-                }
-                }
-        }, []);
-
-    return (
-      <>
-        <Toaster position="top-left" reverseOrder={false} />
-        {/* <ThemeProvider attribute="class"> */}
-        {/* <div className="flex flex-col min-h-screen bg-[#191434]"> */}
-        <div>
-          <main className="flex-grow">
-            <Component {...pageProps} />
-          </main>
-          {/* <Footer className="mt-auto" /> */}
-        </div>
-        {/* </ThemeProvider> */}
-        {process.env.NEXT_PUBLIC_ENABLE_UMAMI === "true" && (
-          <script
-            async
-            defer
-            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
-            src="/umami.js"
-          ></script>
-        )}
-        <Script id="facebook-pixel" strategy="afterInteractive">
-          {`
-          !function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}(window, document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '475202132122033');
-          fbq('track', 'PageView');
-        `}
-        </Script>
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src={`https://www.facebook.com/tr?id=475202132122033&ev=PageView&noscript=1`}
-          />
-        </noscript>
-        <noscript>
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100vh",
-              backgroundColor: "rgba(0,0,0,0.8)",
-              color: "white",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 9999,
-              fontSize: "1.5rem",
-              textAlign: "center",
-            }}
-          >
-            <div>
-              <p>
-                JavaScript is disabled in your browser. Please enable JavaScript
-                to use this website.
-              </p>
-            </div>
-          </div>
-        </noscript>
-      </>
-    );
-}
-
-import "./globals.css";
-import { ReactNode } from "react";
-import Script from "next/script";
-
-export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body>
-        {children}
+    <>
+      <Toaster position="top-left" reverseOrder={false} />
 
-        <Script id="facebook-pixel" strategy="afterInteractive">
-          {`
+      <main className="flex-grow">
+        <Component {...pageProps} />
+      </main>
+
+      {/* Umami Tracking Script */}
+      {process.env.NEXT_PUBLIC_ENABLE_UMAMI === "true" && (
+        <Script
+          async
+          defer
+          data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+          src="/umami.js"
+        />
+      )}
+
+      {/* Facebook Pixel */}
+      <Script id="facebook-pixel" strategy="afterInteractive">
+        {`
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
           n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -127,17 +65,44 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           fbq('init', '475202132122033');
           fbq('track', 'PageView');
         `}
-        </Script>
+      </Script>
 
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src={`https://www.facebook.com/tr?id=475202132122033&ev=PageView&noscript=1`}
-          />
-        </noscript>
-      </body>
-    </html>
+      {/* Fallback for no JavaScript */}
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style={{ display: "none" }}
+          src="https://www.facebook.com/tr?id=475202132122033&ev=PageView&noscript=1"
+        />
+      </noscript>
+
+      <noscript>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            fontSize: "1.5rem",
+            textAlign: "center",
+          }}
+        >
+          <div>
+            <p>
+              JavaScript is disabled in your browser. Please enable JavaScript
+              to use this website.
+            </p>
+          </div>
+        </div>
+      </noscript>
+    </>
   );
 }

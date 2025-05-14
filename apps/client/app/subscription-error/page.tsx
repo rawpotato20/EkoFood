@@ -11,21 +11,23 @@ const SubscriptionError = () => {
     server_error: "Klaida: Įvyko serverio klaida. Bandykite vėliau.",
   };
 
-  const message = errorMessages[code] || "Nežinoma klaida. Prašome bandyti vėliau.";
+  const codeParam = Array.isArray(code) ? code[0] : code;
+
+  const message =
+    typeof codeParam === "string" && codeParam in errorMessages
+      ? errorMessages[codeParam as keyof typeof errorMessages]
+      : "Nežinoma klaida. Prašome bandyti vėliau.";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-lg w-full bg-white rounded-lg shadow-lg border border-gray-200">
-       
         <div className="bg-secondary text-white rounded-t-lg p-6 text-center">
           <h1 className="text-2xl font-bold">⚠️ Klaida</h1>
         </div>
 
-     
         <div className="p-6 text-gray-700">
           <p className="text-lg font-medium text-center">{message}</p>
 
-         
           <div className="bg-gray-100 p-4 rounded-lg mt-6">
             <p className="text-center font-semibold text-gray-600">
               💡 Patarimas: Pasitikrinkite informaciją ir bandykite dar kartą.
@@ -33,7 +35,6 @@ const SubscriptionError = () => {
           </div>
         </div>
 
-       
         <div className="flex justify-center items-center p-6">
           <button
             onClick={() => router.push("/")}
@@ -43,7 +44,6 @@ const SubscriptionError = () => {
           </button>
         </div>
 
-       
         <div className="bg-gray-100 text-center p-4 rounded-b-lg">
           <p className="text-sm text-gray-500">
             © 2025 EkoFood. Visos teisės saugomos.

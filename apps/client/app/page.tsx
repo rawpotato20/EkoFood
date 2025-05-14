@@ -1,29 +1,33 @@
-import Footer from "@/components/basic/footer";
-import HomeNav from "@/components/basic/home-nav";
-import About from "@/components/home/about";
-import Review from "@/components/home/review";
-import Welcome from "@/components/home/welcome";
-import Image from "next/image";
+import Footer from "@/packages/ui/src/components/basic/footer";
+import About from "@/packages/ui/src/components/home/about";
+import Review from "@/packages/ui/src/components/home/review";
+import Welcome from "@/packages/ui/src/components/home/welcome";
 import { usePathname, useRouter } from "next/navigation";
-import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import * as fbq from "@/lib/fpixel";
-import toast from "react-hot-toast";
 import Head from "next/head";
 
-  const defaultWelcomeData = {
-    heading: "Maistas Jūsų sveikatai.",
-    text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
-    // button_text: "Registracija",
-    // button_link: "/",
-    heading2: "",
-  };
+//TODO: Replace with Sonner
+import toast from "react-hot-toast";
 
+const defaultWelcomeData = {
+  heading: "Maistas Jūsų sveikatai.",
+  text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
+  // button_text: "Registracija",
+  // button_link: "/",
+  heading2: "",
+};
+
+interface WelcomeData {
+  heading: string;
+  text: string;
+  heading2: string;
+}
 
 export async function getServerSideProps() {
- const res = await fetch(process.env.WEB_URL + "/api/view/settings").then(
-   (res) => res.json()
- );
+  const res = await fetch(process.env.WEB_URL + "/api/view/settings").then(
+    (res) => res.json()
+  );
 
   const data = res.data;
 
@@ -36,11 +40,9 @@ export async function getServerSideProps() {
   };
 }
 
-const Home = ({welcomeData}) => {
+const Home = ({ welcomeData }: { welcomeData: WelcomeData }) => {
   const router = useRouter();
   const pathname = usePathname();
-
-
 
   const aboutHeader = ["Kas tai", "Kodėl tau rūpi", "Veikimo principas"];
 
@@ -107,11 +109,11 @@ const Home = ({welcomeData}) => {
   //     }
   // }, []);
 
-  const handleClick = (name, value) => {
+  const handleClick = (name: string, value: number) => {
     fbq.event(name, { value: value });
   };
 
-  const customTrack = async (label, value) => {
+  const customTrack = async (label: string, value: number) => {
     const res = await fetch("/api/view/track", {
       method: "POST",
       headers: {

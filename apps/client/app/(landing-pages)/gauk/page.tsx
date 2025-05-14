@@ -1,20 +1,42 @@
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+//TODO: Update the toast to Sonner for toast notifications
 import toast from "react-hot-toast";
-import About from "@/components/home/about";
-import Review from "@/components/home/review";
-import Footer from "@/components/basic/footer";
-import RegisterModal from "@/components/user/register-modal";
-import LoginModal from "@/components/user/login-modal";
-import * as fbq from "@/lib/fpixel";
+
+import About from "@/packages/ui/src/components/home/about";
+import Review from "@/packages/ui/src/components/home/review";
+import Footer from "@/packages/ui/src/components/basic/footer";
+import RegisterModal from "@/packages/ui/src/components/user/register-modal";
+import LoginModal from "@/packages/ui/src/components/user/login-modal";
+import * as fbq from "@/packages/utils/src/fpixel";
 import Head from "next/head";
-import Welcome2 from "@/components/home/welcome2";
+import Welcome2 from "@/packages/ui/src/components/home/welcome2";
+import { GetServerSidePropsContext } from "next";
 
+interface Ad {
+  title: string;
+  logo: string;
+  image2: string;
+  background: string;
+  background2: string;
+  text: string;
+}
 
+interface WelcomeData {
+  heading: string;
+  text: string;
+  heading2: string;
+}
 
-
-const GaukAdPage = ({ ad, welcomeData }) => {
+const GaukAdPage = ({
+  ad,
+  welcomeData,
+}: {
+  ad: Ad;
+  welcomeData: WelcomeData;
+}) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -76,11 +98,12 @@ const GaukAdPage = ({ ad, welcomeData }) => {
     fetchReviews();
   }, []);
 
-  const [show, setShow] = useState(false);
-  const [show2, setShow2] = useState(false);
-  let startTime;
+  const [show, setShow] = useState<boolean>(false);
+  const [show2, setShow2] = useState<boolean>(false);
 
-  const handleClose = (index, value) => {
+  let startTime: number;
+
+  const handleClose = (index: number, value: boolean) => {
     if (index === 1) {
       setShow(value);
     } else {
@@ -89,7 +112,7 @@ const GaukAdPage = ({ ad, welcomeData }) => {
   };
 
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setShow(false);
         setShow2(false);
@@ -105,11 +128,11 @@ const GaukAdPage = ({ ad, welcomeData }) => {
     fbq.pageview();
   }, []);
 
-  const handleClick = (name, value) => {
+  const handleClick = (name: string, value: number) => {
     fbq.event(name, { value: value });
   };
 
-  const customTrack = async (label, value) => {
+  const customTrack = async (label: string, value: number) => {
     const res = await fetch("/api/view/track", {
       method: "POST",
       headers: {
@@ -317,7 +340,7 @@ const GaukAdPage = ({ ad, welcomeData }) => {
 
 export default GaukAdPage;
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   // const { id } = context.params;
   const id = "gauk";
   let ad = {};
@@ -328,18 +351,18 @@ export async function getServerSideProps(context) {
     // button_link: "/",
     heading2: "",
   };
-  
+
   const res = await fetch(`${process.env.WEB_URL}/api/view/ad?id=${id}`).then(
     (res) => res.json()
   );
-   const titleRes = await fetch(process.env.WEB_URL + "/api/view/settings").then(
-     (titleRes) => titleRes.json()
-   );
-   
-   const data = titleRes.data;
+  const titleRes = await fetch(process.env.WEB_URL + "/api/view/settings").then(
+    (titleRes) => titleRes.json()
+  );
+
+  const data = titleRes.data;
 
   const heading2 = data.ads_title || "";
-  
+
   if (res.success) {
     ad = res.data;
     // console.log(ad);

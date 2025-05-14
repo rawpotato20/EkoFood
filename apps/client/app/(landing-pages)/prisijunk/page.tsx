@@ -1,18 +1,42 @@
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+//TODO: Update the toast to Sonner for toast notifications
 import toast from "react-hot-toast";
-import About from "@/components/home/about";
-import Review from "@/components/home/review";
-import Footer from "@/components/basic/footer";
-import RegisterModal from "@/components/user/register-modal";
-import LoginModal from "@/components/user/login-modal";
-import * as fbq from "@/lib/fpixel";
+
+import About from "@/packages/ui/src/components/home/about";
+import Review from "@/packages/ui/src/components/home/review";
+import Footer from "@/packages/ui/src/components/basic/footer";
+import RegisterModal from "@/packages/ui/src/components/user/register-modal";
+import LoginModal from "@/packages/ui/src/components/user/login-modal";
+import * as fbq from "@/packages/utils/src/fpixel";
 import Head from "next/head";
-import Welcome2 from "@/components/home/welcome2";
+import Welcome2 from "@/packages/ui/src/components/home/welcome2";
+import { GetServerSidePropsContext } from "next";
 
+interface Ad {
+  title: string;
+  logo: string;
+  image2: string;
+  background: string;
+  background2: string;
+  text: string;
+}
 
-const PrisijunkAdPage = ({ ad, welcomeData }) => {
+interface WelcomeData {
+  heading: string;
+  text: string;
+  heading2: string;
+}
+
+const PrisijunkAdPage = ({
+  ad,
+  welcomeData,
+}: {
+  ad: Ad;
+  welcomeData: WelcomeData;
+}) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -74,11 +98,11 @@ const PrisijunkAdPage = ({ ad, welcomeData }) => {
     fetchReviews();
   }, []);
 
-  const [show, setShow] = useState(false);
-  const [show2, setShow2] = useState(false);
-  let startTime;
+  const [show, setShow] = useState<boolean>(false);
+  const [show2, setShow2] = useState<boolean>(false);
+  let startTime: number;
 
-  const handleClose = (index, value) => {
+  const handleClose = (index: number, value: boolean) => {
     if (index === 1) {
       setShow(value);
     } else {
@@ -87,7 +111,7 @@ const PrisijunkAdPage = ({ ad, welcomeData }) => {
   };
 
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setShow(false);
         setShow2(false);
@@ -103,11 +127,11 @@ const PrisijunkAdPage = ({ ad, welcomeData }) => {
     fbq.pageview();
   }, []);
 
-  const handleClick = (name, value) => {
+  const handleClick = (name: string, value: number) => {
     fbq.event(name, { value: value });
   };
 
-  const customTrack = async (label, value) => {
+  const customTrack = async (label: string, value: number) => {
     const res = await fetch("/api/view/track", {
       method: "POST",
       headers: {
@@ -337,7 +361,7 @@ const PrisijunkAdPage = ({ ad, welcomeData }) => {
 
 export default PrisijunkAdPage;
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   // const { id } = context.params;
   const id = "prisijunk";
   let ad = {};

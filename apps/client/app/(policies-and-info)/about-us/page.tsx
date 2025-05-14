@@ -1,12 +1,15 @@
-import Footer from '@/components/basic/footer';
-import HomeNav from '@/components/basic/home-nav';
-import React from 'react'
+import Footer from "@/packages/ui/src/components/basic/footer";
+import HomeNav from "@/packages/ui/src/components/basic/home-nav";
+import React from "react";
+
+//TODO: Replace with html-react-parser
 import ReactHtmlParser from "react-html-parser";
 
+interface SettingsData {
+  about_page_content: string;
+}
 
-const AboutUs = ({data}) => {
-
-
+const AboutUs = ({ data }: { data: SettingsData }) => {
   return (
     <>
       <div className="bg-black flex flex-col">
@@ -24,12 +27,12 @@ const AboutUs = ({data}) => {
       </div>
     </>
   );
-}
+};
 
 export default AboutUs;
 
 export async function getServerSideProps() {
-  let data
+  let data;
   const res = await fetch(process.env.WEB_URL + "/api/view/settings").then(
     (res) => res.json()
   );
