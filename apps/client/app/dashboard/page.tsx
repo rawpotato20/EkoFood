@@ -6,6 +6,7 @@ import DashProducts from "@/packages/ui/src/components/dashboard/dash-products";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import ReactHtmlParser from "html-react-parser";
 
 //TODO: Replace this with lucide-react
 import { RiCloseCircleLine } from "react-icons/ri";
@@ -14,8 +15,6 @@ import { FaPlay } from "react-icons/fa";
 import { parseCookies, setCookie } from "nookies";
 //TODO: Update the toast to Sonner for toast notifications
 import toast from "react-hot-toast";
-//TODO: Replace this with html-react-parser
-import ReactHtmlParser from "react-html-parser";
 
 interface User {
   _id: string;
@@ -67,7 +66,9 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    let user = JSON.parse(parseCookies().user || null);
+    let userCookie = parseCookies().user;
+    let user = userCookie ? JSON.parse(userCookie) : null;
+
     if (!user) {
       router.push("/");
     } else {

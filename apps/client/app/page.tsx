@@ -4,7 +4,7 @@ import Review from "@/packages/ui/src/components/home/review";
 import Welcome from "@/packages/ui/src/components/home/welcome";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import * as fbq from "@/lib/fpixel";
+import * as fbq from "@/packages/utils/src/fpixel";
 import Head from "next/head";
 
 //TODO: Replace with Sonner

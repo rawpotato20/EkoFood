@@ -1,6 +1,6 @@
-'use client';
-import { useEffect } from 'react';
-import Error500 from 'ui/components/Error500';
+"use client";
+import { useEffect } from "react";
+import Error500 from "@/packages/ui/src/components/errors/500";
 
 export default function GlobalError({
   error,

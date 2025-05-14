@@ -1,3 +1,3 @@
-import NotFound from 'ui/components/404';
+import NotFound from "@/packages/ui/src/components/errors/404";
 
 export default NotFound;

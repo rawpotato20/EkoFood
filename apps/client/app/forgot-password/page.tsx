@@ -1,13 +1,12 @@
 import { trackEventFunction } from "@/packages/utils/src/general";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 //TODO: Update the toast to Sonner for toast notifications
 import toast from "react-hot-toast";
 //TODO: Update to lucide-icons
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-//TODO: Outdated import
-const { useRouter } = require("next/navigation");
 //TODO: See if we still use nookies, if not, replace
 import { destroyCookie } from "nookies";
 

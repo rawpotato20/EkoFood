@@ -34,7 +34,10 @@ const AllProducts = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    let user = JSON.parse(parseCookies().user || null);
+    
+    let userCookie = parseCookies().user;
+    let user = userCookie ? JSON.parse(userCookie) : null;
+
     if (!user) {
       router.push("/");
     } else {

@@ -13,6 +13,7 @@ import { parseCookies } from "nookies";
 //TODO: Replace with Sonner
 import { Toaster } from "react-hot-toast";
 //TODO: replace with Framer Motion or something similar
+//@ts-ignore
 import Aos from "aos";
 import "aos/dist/aos.css";
 
@@ -27,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
       if (!user && process.env.NEXT_PUBLIC_ENABLE_UMAMI === "true") {
         if (window.umami) {
-          window.umami.identify({ id: user?._id, email: user?.email });
+          window.umami?.identify?.({ id: user?._id, email: user?.email });
         }
       }
     }

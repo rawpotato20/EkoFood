@@ -2,8 +2,7 @@ import Footer from "@/packages/ui/src/components/basic/footer";
 import HomeNav from "@/packages/ui/src/components/basic/home-nav";
 import React from "react";
 
-//TODO: Replace with html-react-parser
-import ReactHtmlParser from "react-html-parser";
+import ReactHtmlParser from "html-react-parser";
 
 interface SettingsData {
   about_page_content: string;
