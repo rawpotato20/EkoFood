@@ -1,8 +1,8 @@
-import { formatDate } from "@/lib/date";
-import Image from "next/image";
-import Link from "next/link";
+import { formatDate } from "@/packages/utils/src/date";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+//TODO: React Icons
 import { FaGift } from "react-icons/fa";
 import {
   RiCoupon3Line,
@@ -11,21 +11,38 @@ import {
   RiTimeLine,
 } from "react-icons/ri";
 
-const SettingsCoupon = (props) => {
+interface SettingsCouponProps {
+  data: {
+    _id: string;
+  };
+}
+
+interface CouponItem {
+  _id: string;
+  expires: string;
+  created_at: string;
+  coupon: {
+    name: string;
+    percentage: number;
+  };
+}
+
+const SettingsCoupon = (props: SettingsCouponProps) => {
   const router = useRouter();
-    const pathname = usePathname();
-    const [coupons, setCoupons] = useState([]);
-    const fetchCoupons = async () => {
-        const res = await fetch(`/api/view/coupons/${props.data._id}`).then((res) => res.json());
-        if (res.success) {
-            setCoupons(res.data);
-        }
-    };
+  const pathname = usePathname();
+  const [coupons, setCoupons] = useState<CouponItem[]>([]);
+  const fetchCoupons = async () => {
+    const res = await fetch(`/api/view/coupons/${props.data._id}`).then((res) =>
+      res.json()
+    );
+    if (res.success) {
+      setCoupons(res.data);
+    }
+  };
 
-    useEffect(() => {
-        if (props.data._id) fetchCoupons();
-    }, [props.data._id]);
-
+  useEffect(() => {
+    if (props.data._id) fetchCoupons();
+  }, [props.data._id]);
 
   return (
     <>

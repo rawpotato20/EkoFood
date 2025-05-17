@@ -1,16 +1,23 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
+import AuthLogoSection from "../auth-logo-section";
+import { trackEventFunction } from "@/packages/utils/src/general";
+
+//TODO: React Icons, nookies and toast
+import { IoClose } from "react-icons/io5";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { setCookie } from "nookies";
 import toast from "react-hot-toast";
-const { useRouter } = require("next/navigation");
-const { useState } = require("react");
-import { RiCloseCircleLine } from "react-icons/ri";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import Link from "next/link";
-import { IoClose } from "react-icons/io5";
-import AuthLogoSection from "../auth-logo-section";
-import { trackEventFunction } from "@/utils/general";
 
-const LoginModal = (props) => {
+interface LoginModalProps {
+  handleClose: (index: number, value: boolean) => void;
+}
+
+const LoginModal = (props: LoginModalProps) => {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -21,7 +28,7 @@ const LoginModal = (props) => {
 
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const res = await fetch("/api/auth/login", {
@@ -32,7 +39,7 @@ const LoginModal = (props) => {
       body: JSON.stringify({ email, password }),
     }).then((res) => res.json());
     if (res.success) {
-      trackEventFunction("Login Form Submited")
+      trackEventFunction("Login Form Submited");
       if (!remember) {
         setCookie(null, "showModal", "true", {
           maxAge: 30 * 24 * 60 * 60,
@@ -123,7 +130,7 @@ const LoginModal = (props) => {
                       type="checkbox"
                       className="mr-2"
                       // required
-                      value={remember}
+                      checked={remember}
                       onChange={(e) => setRemember(e.target.checked)}
                       data-umami-event="Remember Me Checkbox Clicked"
                     />

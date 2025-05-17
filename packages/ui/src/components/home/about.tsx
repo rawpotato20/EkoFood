@@ -41,7 +41,7 @@ const About = (props: AboutProps) => {
 
   return (
     <>
-      <div className="container mx-auto px-3 md:px-0 py-14 md:py-24 space-y-10 lg:pt-32 xl:pt-60">
+      <div className="container bg-red-500 mx-auto px-3 md:px-0 py-14 md:py-24 space-y-10 lg:pt-32 xl:pt-60">
         <div
           className="text-xl md:text-4xl font-bold text-center"
           data-aos="fade-down"
