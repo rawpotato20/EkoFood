@@ -30,6 +30,8 @@
     "packages/*"
   ],
   "dependencies": {
+    "@headlessui/react": "^2.2.3",
+    "@tailwindcss/postcss": "^4.1.7",
     "aos": "^2.3.4",
     "html-react-parser": "^5.2.5",
     "next": "15.3.2",
@@ -37,6 +39,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-image-gallery": "^1.4.0"
   }
 }

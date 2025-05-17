@@ -8,7 +8,29 @@ interface SettingsData {
   about_page_content: string;
 }
 
-const AboutUs = ({ data }: { data: SettingsData }) => {
+async function getPageData(): Promise<{
+  data: { about_page_content: string };
+}> {
+  const res = await fetch(`${process.env.WEB_URL}/api/view/settings`, {
+    cache: "no-store",
+  });
+  const json = await res.json();
+
+  if (json.success) {
+    return { data: json.data };
+  } else {
+    console.log(json.message);
+    return {
+      data: {
+        about_page_content: "<p>Informacija šiuo metu nepasiekiama.</p>",
+      },
+    };
+  }
+}
+
+const AboutUs = async () => {
+  const { data } = await getPageData();
+
   return (
     <>
       <div className="bg-black flex flex-col">
@@ -29,18 +51,3 @@ const AboutUs = ({ data }: { data: SettingsData }) => {
 };
 
 export default AboutUs;
-
-export async function getServerSideProps() {
-  let data;
-  const res = await fetch(process.env.WEB_URL + "/api/view/settings").then(
-    (res) => res.json()
-  );
-  if (res.success) {
-    data = res.data;
-  } else {
-    console.log(res.message);
-  }
-  return {
-    props: { data },
-  };
-}

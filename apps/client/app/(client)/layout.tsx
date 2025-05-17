@@ -1,7 +1,6 @@
 "use client";
 
 import "@/packages/styles/global.css";
-import "./globals.css";
 
 import { useEffect } from "react";
 import { useRouter } from "next/router";

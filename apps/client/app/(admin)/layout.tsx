@@ -1,2 +1,1 @@
-import 'styles/global.css'
-import './globals.css'
+import "@/packages/styles/global.css";

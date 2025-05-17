@@ -4,18 +4,23 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiEdit2, FiTrash } from "react-icons/fi";
 import { IoCloseCircleOutline } from "react-icons/io5";
-import AddReviews from "../add-reviews";
-import EditReviews from "../edit-reviews";
-import DeleteReview from "../delete-review";
 import AddCoupon from "./add-coupon";
 import EditCoupon from "./edit-coupon";
 import DeleteCoupon from "./delete-coupon";
+import toast from "react-hot-toast";
 
-const Coupon = (props) => {
+export interface Coupon {
+  id: string;
+  name: string;
+  couponType: string;
+  percentage: number;
+}
+
+const Coupon = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [coupons, setCoupon] = useState([]);
+  const [coupons, setCoupon] = useState<Coupon[]>([]);
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);

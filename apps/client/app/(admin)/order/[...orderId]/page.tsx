@@ -5,7 +5,6 @@ import ModNav from "@/packages/ui/src/components/basic/mod-nav";
 
 //TODO: Replace with Sonner
 import toast from "react-hot-toast";
-import { GetServerSidePropsContext } from "next";
 
 type OrderStatus = "pending" | "shipped" | "delivered" | "cancelled";
 
@@ -35,7 +34,23 @@ interface Order {
   payment_done: boolean;
 }
 
-const AdminOrderPage = ({ order }: { order: Order }) => {
+async function getPageData(id: string) {
+  const res = await fetch(`${process.env.WEB_URL}/api/order/single?id=${id}`, {
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+
+  if (!json.success || !json.data) {
+    throw new Error(json.message || "Order not found");
+  }
+
+  return { order: json.data };
+}
+
+const AdminOrderPage = async ({ params }: { params: { id: string } }) => {
+  const { order } = await getPageData(params.id);
+
   const router = useRouter();
   const pathname = usePathname();
   const [status, setStatus] = useState(order.status);
@@ -114,7 +129,7 @@ const AdminOrderPage = ({ order }: { order: Order }) => {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Products</h3>
             <div className="w-full flex flex-wrap justify-around">
-              {order.products.map((product, index) => (
+              {order.products.map((product: OrderProduct, index: number) => (
                 <div key={index} className="flex items-center mb-4">
                   <Image
                     src={product.image}
@@ -195,20 +210,3 @@ const AdminOrderPage = ({ order }: { order: Order }) => {
 };
 
 export default AdminOrderPage;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { id } = context.params!;
-  let order = {};
-  const res = await fetch(
-    `${process.env.WEB_URL}/api/order/single?id=${id}`
-  ).then((res) => res.json());
-  if (res.success) {
-    order = res.data;
-  } else {
-    toast.error(res.message);
-    console.log(res.message);
-  }
-  return {
-    props: { order },
-  };
-}

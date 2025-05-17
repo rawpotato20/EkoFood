@@ -13,7 +13,6 @@ import LoginModal from "@/packages/ui/src/components/user/login-modal";
 import * as fbq from "@/packages/utils/src/fpixel";
 import Head from "next/head";
 import Welcome2 from "@/packages/ui/src/components/home/welcome2";
-import { GetServerSidePropsContext } from "next";
 
 interface Ad {
   title: string;
@@ -30,9 +29,45 @@ interface WelcomeData {
   heading2: string;
 }
 
-const AdPage = ({ ad, welcomeData }: { ad: Ad; welcomeData: WelcomeData }) => {
+async function getPageData(id: string): Promise<{
+  ad: any;
+  welcomeData: { heading: string; text: string; heading2: string };
+}> {
+  const defaultWelcomeData = {
+    heading: "Maistas Jūsų sveikatai.",
+    text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
+    heading2: "",
+  };
+
+  const adRes = await fetch(`${process.env.WEB_URL}/api/view/ad?id=${id}`, {
+    cache: "no-store",
+  });
+  const adJson = await adRes.json();
+
+  if (!adJson.success || !adJson.data) {
+    throw new Error("Ad not found");
+  }
+
+  const settingsRes = await fetch(`${process.env.WEB_URL}/api/view/settings`, {
+    cache: "no-store",
+  });
+  const settingsJson = await settingsRes.json();
+
+  const heading2 = settingsJson?.data?.ads_title || "";
+
+  return {
+    ad: adJson.data,
+    welcomeData: { ...defaultWelcomeData, heading2 },
+  };
+}
+
+const AdPage = async ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const pathname = usePathname();
+
+  if (!params?.id) throw new Error("ID param is missing");
+
+  const { ad, welcomeData } = await getPageData(params.id);
 
   const aboutHeader = ["Kas tai", "Kodėl tau rūpi", "Veikimo principas"];
 
@@ -329,48 +364,3 @@ const AdPage = ({ ad, welcomeData }: { ad: Ad; welcomeData: WelcomeData }) => {
 };
 
 export default AdPage;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  if (!context.params || typeof context.params.id !== "string") {
-    return { notFound: true };
-  }
-  const { id } = context.params;
-
-  let ad = {};
-  const defaultWelcomeData = {
-    heading: "Maistas Jūsų sveikatai.",
-    text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
-    // button_text: "Registracija",
-    // button_link: "/",
-    heading2: "",
-  };
-
-  const res = await fetch(`${process.env.WEB_URL}/api/view/ad?id=${id}`).then(
-    (res) => res.json()
-  );
-  const titleRes = await fetch(process.env.WEB_URL + "/api/view/settings").then(
-    (titleRes) => titleRes.json()
-  );
-
-  const data = titleRes.data;
-
-  const heading2 = data.ads_title || "";
-
-  if (res.success) {
-    ad = res.data;
-    // console.log(ad);
-  } else {
-    toast.error(res.message);
-    console.log(res.message);
-  }
-  if (!ad) {
-    return { notFound: true };
-  } else
-    return {
-      props: {
-        id,
-        ad,
-        welcomeData: { ...defaultWelcomeData, heading2 },
-      },
-    };
-}

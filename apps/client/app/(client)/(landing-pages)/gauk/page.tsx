@@ -13,7 +13,6 @@ import LoginModal from "@/packages/ui/src/components/user/login-modal";
 import * as fbq from "@/packages/utils/src/fpixel";
 import Head from "next/head";
 import Welcome2 from "@/packages/ui/src/components/home/welcome2";
-import { GetServerSidePropsContext } from "next";
 
 interface Ad {
   title: string;
@@ -30,13 +29,35 @@ interface WelcomeData {
   heading2: string;
 }
 
-const GaukAdPage = ({
-  ad,
-  welcomeData,
-}: {
-  ad: Ad;
-  welcomeData: WelcomeData;
-}) => {
+async function getPageData(): Promise<{ ad: Ad; welcomeData: WelcomeData }> {
+  const id = "gauk";
+
+  const defaultWelcomeData = {
+    heading: "Maistas Jūsų sveikatai.",
+    text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
+    heading2: "",
+  };
+
+  const adRes = await fetch(`${process.env.WEB_URL}/api/view/ad?id=${id}`, {
+    cache: "no-store",
+  }).then((r) => r.json());
+
+  const settingsRes = await fetch(`${process.env.WEB_URL}/api/view/settings`, {
+    cache: "no-store",
+  }).then((r) => r.json());
+
+  return {
+    ad: adRes.data,
+    welcomeData: {
+      ...defaultWelcomeData,
+      heading2: settingsRes.data.ads_title || "",
+    },
+  };
+}
+
+const GaukAdPage = async () => {
+  const { ad, welcomeData } = await getPageData();
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -339,42 +360,3 @@ const GaukAdPage = ({
 };
 
 export default GaukAdPage;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  // const { id } = context.params;
-  const id = "gauk";
-  let ad = {};
-  const defaultWelcomeData = {
-    heading: "Maistas Jūsų sveikatai.",
-    text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
-    // button_text: "Registracija",
-    // button_link: "/",
-    heading2: "",
-  };
-
-  const res = await fetch(`${process.env.WEB_URL}/api/view/ad?id=${id}`).then(
-    (res) => res.json()
-  );
-  const titleRes = await fetch(process.env.WEB_URL + "/api/view/settings").then(
-    (titleRes) => titleRes.json()
-  );
-
-  const data = titleRes.data;
-
-  const heading2 = data.ads_title || "";
-
-  if (res.success) {
-    ad = res.data;
-    // console.log(ad);
-  } else {
-    toast.error(res.message);
-    console.log(res.message);
-  }
-  return {
-    props: {
-      id,
-      ad,
-      welcomeData: { ...defaultWelcomeData, heading2 },
-    },
-  };
-}

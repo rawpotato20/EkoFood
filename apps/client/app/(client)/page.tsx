@@ -1,3 +1,5 @@
+"use client";
+
 import Footer from "@/packages/ui/src/components/basic/footer";
 import About from "@/packages/ui/src/components/home/about";
 import Review from "@/packages/ui/src/components/home/review";
@@ -10,37 +12,31 @@ import Head from "next/head";
 //TODO: Replace with Sonner
 import toast from "react-hot-toast";
 
-const defaultWelcomeData = {
-  heading: "Maistas Jūsų sveikatai.",
-  text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
-  // button_text: "Registracija",
-  // button_link: "/",
-  heading2: "",
-};
-
 interface WelcomeData {
   heading: string;
   text: string;
   heading2: string;
 }
 
-export async function getServerSideProps() {
-  const res = await fetch(process.env.WEB_URL + "/api/view/settings").then(
-    (res) => res.json()
-  );
+async function getPageData() {
+  const defaultWelcomeData = {
+    heading: "Maistas Jūsų sveikatai.",
+    text: `Sveika mityba dabar yra ne tik išmintinga, bet ir stilinga. <br /><br /> Čia rasite kruopščiai atrinktus tik ekologiškus, gamtai draugiškus ir patvirtintus produktus. <br /><br /> Norite pagerinti savo mitybą? Pasirinkite savo mėgstamus produktus ir mėgaukitės jų pristatymu tiesiai pas Jus kiekvieną mėnesį, atsikratydami visų rūpesčių.`,
+    heading2: "",
+  };
 
-  const data = res.data;
-
-  const heading2 = data.ads_title || "";
+  const res = await fetch(`${process.env.WEB_URL}/api/view/settings`, {
+    cache: "no-store",
+  });
+  const json = await res.json();
+  const heading2 = json?.data?.ads_title || "";
 
   return {
-    props: {
-      welcomeData: { ...defaultWelcomeData, heading2 },
-    },
+    welcomeData: { ...defaultWelcomeData, heading2 },
   };
 }
 
-const Home = ({ welcomeData }: { welcomeData: WelcomeData }) => {
+const Home = () => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -87,6 +83,11 @@ const Home = ({ welcomeData }: { welcomeData: WelcomeData }) => {
     },
   ];
 
+  const [welcomeData, setWelcomeData] = useState<WelcomeData>({
+    heading: "",
+    text: "",
+    heading2: "",
+  });
   const [reviewData, setReviewData] = useState([]);
 
   const fetchReviews = async () => {
@@ -99,7 +100,17 @@ const Home = ({ welcomeData }: { welcomeData: WelcomeData }) => {
   };
 
   useEffect(() => {
+    async function fetchData() {
+      try {
+        const { welcomeData } = await getPageData();
+        setWelcomeData(welcomeData);
+      } catch (error) {
+        console.error("Failed to fetch page data:", error);
+      }
+    }
+
     fetchReviews();
+    fetchData();
   }, []);
 
   // useEffect(() => {

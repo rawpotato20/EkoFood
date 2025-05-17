@@ -1,11 +1,17 @@
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const DeleteCoupon = (props) => {
+interface DeleteCouponProps {
+  data: {
+    _id: string;
+    // optionally you can add more fields if needed, like name, percentage, etc.
+  };
+  handleClose: () => void;
+}
+
+const DeleteCoupon = (props: DeleteCouponProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
