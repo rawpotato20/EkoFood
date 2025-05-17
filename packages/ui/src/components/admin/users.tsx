@@ -1,23 +1,32 @@
-import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
-import { FiEdit2, FiTrash } from "react-icons/fi";
-import { IoCloseCircleOutline } from "react-icons/io5";
-import DeleteProduct from "./delete-product";
 import ViewUser from "./view-user";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
+//TODO: Sonner, Lucid Icons and Nookies
+import toast from "react-hot-toast";
+import { FiEdit2, FiTrash } from "react-icons/fi";
+import { IoCloseCircleOutline } from "react-icons/io5";
+import { parseCookies } from "nookies";
+
+export interface User {
+  _id: string;
+  name?: string;
+  last_name?: string;
+  email?: string;
+  connected_with_listmonk?: boolean;
+}
+
 const Users = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState("");
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
-  const [selectedData, setSelectedData] = useState({});
+  const [selectedData, setSelectedData] = useState<User | null>(null);
   const [loading2, setLoading2] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
 
-  const handleSync = async (id) => {
+  const handleSync = async (id: string) => {
     setSyncing(true);
     const res = await fetch("/api/user/sync-listmonk", {
       method: "POST",
@@ -71,7 +80,7 @@ const Users = () => {
     fetchUsers();
   }, [adminPassword]);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
@@ -82,6 +91,7 @@ const Users = () => {
   );
   const handleSubmit = async () => {
     setLoading2(true);
+    if (!selectedData) return console.log("No selected Data.");
     const res = await fetch("/api/user/general", {
       method: "DELETE",
       headers: {
@@ -147,7 +157,7 @@ const Users = () => {
                       onClick={() => handleSync(user._id)}
                       className="px-4 py-1 bg-blue-300 rounded-lg"
                     >
-                       Sync
+                      Sync
                     </button>
                   )}
                 </div>
@@ -184,7 +194,8 @@ const Users = () => {
                 <IoCloseCircleOutline className="text-2xl" />
               </button>
             </div>
-            <ViewUser data={selectedData} />
+            {/* TODO: Make this work with proper types */}
+            {/* {selectedData && <ViewUser data={selectedData} />} */}
           </div>
         </div>
       )}
@@ -213,7 +224,7 @@ const Users = () => {
                 <button
                   className="bg-danger text-white py-2 px-7 rounded"
                   type="button"
-                  onClick={ handleSubmit}
+                  onClick={handleSubmit}
                 >
                   {loading2 ? "DELETING..." : "DELETE"}
                 </button>

@@ -1,16 +1,17 @@
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiEdit2, FiTrash } from "react-icons/fi";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import AddCoupon from "./add-coupon";
 import EditCoupon from "./edit-coupon";
 import DeleteCoupon from "./delete-coupon";
+
+//TODO: Replace with lucid icons
+import { FiEdit2, FiTrash } from "react-icons/fi";
+//TODO: toast so sonner
 import toast from "react-hot-toast";
 
 export interface Coupon {
-  id: string;
+  _id: string;
   name: string;
   couponType: string;
   percentage: number;
@@ -25,7 +26,7 @@ const Coupon = () => {
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
-  const [selectedData, setSelectedData] = useState({});
+  const [selectedData, setSelectedData] = useState<Coupon | null>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -86,7 +87,7 @@ const Coupon = () => {
           <div className="h-[60vh] overflow-y-scroll">
             {coupons.map((coupon) => (
               <div
-                key={coupon.id}
+                key={coupon._id}
                 className="flex flex-row justify-between items-center py-2 px-7 border border-white rounded-xl"
               >
                 <div className="w-1/6 text-left flex justify-start">
@@ -147,7 +148,7 @@ const Coupon = () => {
                   <IoCloseCircleOutline className="text-2xl" />
                 </button>
               </div>
-              <EditCoupon data={selectedData} />
+              {selectedData && <EditCoupon data={selectedData} />}
             </div>
           </div>
         </>
@@ -161,7 +162,9 @@ const Coupon = () => {
                   <IoCloseCircleOutline className="text-2xl" />
                 </button>
               </div>
-              <DeleteCoupon data={selectedData} handleClose={handleClose} />
+              {selectedData && (
+                <DeleteCoupon data={selectedData} handleClose={handleClose} />
+              )}
             </div>
           </div>
         </>

@@ -1,23 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import { FaArrowCircleRight, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
-import { Autoplay, Navigation } from 'swiper/modules';
+import React, { useEffect, useState } from "react";
+
+//TODO: Swiper and Toast
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
 import "swiper/css";
+import toast from "react-hot-toast";
+
+interface Review {
+  name: string;
+  comment: string;
+  rating: number;
+}
 
 const ReviewSwiper = () => {
-    const [reviewData, setReviewData] = useState([]);
+  const [reviewData, setReviewData] = useState<Review[]>([]);
 
-    const fetchReviews = async () => {
-      const res = await fetch("/api/view/review").then((res) => res.json());
-      if (res.success) {
-        setReviewData(res.data);
-      } else {
-        toast.error(res.message);
-      }
-    };
-     useEffect(() => {
-       fetchReviews();
-     }, []);
+  const fetchReviews = async () => {
+    const res = await fetch("/api/view/review").then((res) => res.json());
+    if (res.success) {
+      setReviewData(res.data);
+    } else {
+      toast.error(res.message);
+    }
+  };
+  useEffect(() => {
+    fetchReviews();
+  }, []);
   const duplicateSlides =
     reviewData.length > 0 ? [...reviewData, ...reviewData] : [];
 
@@ -112,6 +120,6 @@ const ReviewSwiper = () => {
       </div>
     </div>
   );
-}
+};
 
-export default ReviewSwiper
+export default ReviewSwiper;

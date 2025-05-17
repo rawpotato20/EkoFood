@@ -1,34 +1,62 @@
 import { loadStripe } from "@stripe/stripe-js";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { parseCookies } from "nookies";
 import { useEffect, useMemo, useState } from "react";
-import Select from "react-dropdown-select";
+
+//TODO: Update these
+import Select from "react-select";
 import toast from "react-hot-toast";
 import {
-  RiCheckboxCircleLine,
   RiCheckDoubleLine,
-  RiCouponLine,
-  RiErrorWarningLine,
   RiFlashlightLine,
   RiLoader2Line,
 } from "react-icons/ri";
 
-const CheckoutButton = (props) => {
+interface User {
+  _id: string;
+  email: string;
+  stripe_customer_id: string;
+  first_order_discount_received: boolean;
+}
+
+interface Cart {
+  final_price: number;
+}
+
+interface CheckoutButtonProps {
+  user: User;
+  cart: Cart;
+}
+
+interface Coupon {
+  coupon: {
+    _id: string;
+    name: string;
+    percentage: number;
+  };
+}
+
+interface CouponOption {
+  value: string;
+  label: string;
+  percentage: number;
+}
+
+const CheckoutButton = (props: CheckoutButtonProps) => {
   const [loading, setLoading] = useState(false);
-  const [coupon, setCoupon] = useState();
+  const [coupon, setCoupon] = useState<CouponOption | null>(null);
   const [activationLoading, setActivationLoading] = useState(false);
   const [activationSuccess, setActivationSuccess] = useState(false);
   const [couponLoading, setCouponLoading] = useState(false);
   const [coupons, setCoupons] = useState([]);
-    const router = useRouter();
+  const router = useRouter();
 
   const fetchCoupons = async () => {
     const res = await fetch(`/api/view/coupons/${props.user._id}`).then((res) =>
       res.json()
     );
     if (res.success) {
-      const couponsSelected = res.data.map((coupon) => ({
+      const couponsSelected = res.data.map((coupon: Coupon) => ({
         value: coupon.coupon._id,
         label: coupon.coupon.name,
         percentage: coupon.coupon.percentage,
@@ -50,22 +78,21 @@ const CheckoutButton = (props) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        couponId: coupon[0].value,
+        couponId: coupon.value,
         userId: props.user._id,
       }),
     }).then((res) => res.json());
 
     if (res.success) {
-      
       setActivationSuccess(true);
       setActivationLoading(false);
       toast.success(res.message);
-                  router.refresh();
+      router.refresh();
     } else {
-            setActivationLoading(false);
+      setActivationLoading(false);
       toast.error(res.message);
     }
-  }
+  };
 
   useEffect(() => {
     if (props.user._id) fetchCoupons();
@@ -88,8 +115,16 @@ const CheckoutButton = (props) => {
 
     const { sessionId } = await res.json();
 
-    // Redirect to Stripe Checkout
-    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUB_KEY);
+    // Redirect to Stripe
+    const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUB_KEY;
+
+    if (!stripePublicKey) {
+      throw new Error(
+        "Stripe public key is not defined in environment variables"
+      );
+    }
+    const stripe = await loadStripe(stripePublicKey);
+    if (!stripe) return console.log("No stripe thing found");
     await stripe.redirectToCheckout({ sessionId });
 
     setLoading(false);
@@ -97,7 +132,7 @@ const CheckoutButton = (props) => {
 
   const discountedPrice = useMemo(() => {
     let price = props.cart?.final_price;
-    
+
     if (!price || isNaN(price)) {
       return "";
     }
@@ -106,12 +141,16 @@ const CheckoutButton = (props) => {
       price = price - (price * 10) / 100;
     }
 
-    if (coupon && coupon[0]?.percentage) {
-      price = price - (price * coupon[0].percentage) / 100;
+    if (coupon && coupon.percentage) {
+      price = price - (price * coupon.percentage) / 100;
     }
 
     return price > 0 ? price.toFixed(2) + "€" : "";
-  }, [coupon, props.cart?.final_price, props.user.first_order_discount_received]);
+  }, [
+    coupon,
+    props.cart?.final_price,
+    props.user.first_order_discount_received,
+  ]);
 
   return (
     <div className=" sm:h-auto ">
@@ -145,16 +184,15 @@ const CheckoutButton = (props) => {
           </label>
           <div className="flex flex-col md:flex-row gap-2 max-w-full items-center justify-center">
             <div className="relative w-full md:w-auto">
-              <Select
+              <Select<CouponOption>
                 id="coupon-select"
-                value={coupon ? { value: coupon, label: coupon } : null}
+                value={coupon}
                 isDisabled={activationLoading || couponLoading}
                 onChange={(selectedOption) => setCoupon(selectedOption)}
                 options={coupons}
-                className="w-full md:w-64 md:h-12 rounded-3xl "
+                className="w-full md:w-64 md:h-12 rounded-3xl"
                 classNamePrefix="react-select"
                 placeholder="Pasirinkite kuponą"
-                noDataLabel="Kuponų nerasta."
                 isClearable
                 styles={{
                   control: (baseStyles) => ({
@@ -176,8 +214,8 @@ const CheckoutButton = (props) => {
                     backgroundColor: state.isSelected
                       ? "#4ade80"
                       : state.isFocused
-                      ? "#d1fae5"
-                      : "white",
+                        ? "#d1fae5"
+                        : "white",
                     color: state.isSelected ? "white" : "black",
                     "&:hover": {
                       backgroundColor: "#d1fae5",
@@ -219,7 +257,7 @@ const CheckoutButton = (props) => {
           </div>
           <div className="flex flex-col gap-1 mt-2">
             <p>
-              Pradinė kaina: {" "}
+              Pradinė kaina:{" "}
               {props.cart?.final_price
                 ? props.cart?.final_price?.toFixed(2) + "€"
                 : "0€"}

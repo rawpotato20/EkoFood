@@ -1,13 +1,19 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import dynamic from "next/dynamic";
 import { parseCookies } from "nookies";
 // const Editor = dynamic(() => import("../../basic/quill-editor"), {
 //     ssr: false,
 // });
 
-const EditCoupon = (props) => {
+interface Coupon {
+  _id: string;
+  name: string;
+  percentage: number;
+  couponType: string;
+}
+
+const EditCoupon = (props: { data: Coupon }) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -26,7 +32,7 @@ const EditCoupon = (props) => {
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const res = await fetch("/api/admin/coupon", {
@@ -90,7 +96,7 @@ const EditCoupon = (props) => {
               id="rating"
               name="rating"
               value={percentage}
-              onChange={(e) => setPercentage(e.target.value)}
+              onChange={(e) => setPercentage(Number(e.target.value))}
               className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
             />
           </div>

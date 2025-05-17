@@ -1,11 +1,9 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+//TODO: Toast and nookies
 import toast from "react-hot-toast";
-import dynamic from "next/dynamic";
 import { parseCookies } from "nookies";
-const Editor = dynamic(() => import("../../basic/quill-editor"), {
-  ssr: false,
-});
 
 const AddCoupon = () => {
   const router = useRouter();

@@ -1,21 +1,46 @@
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import ProductItem from "./product-item";
-import toast from "react-hot-toast";
-import { trackEventFunction } from "@/utils/general";
+import { trackEventFunction } from "@/packages/utils/src/general";
+
+//TODO: Lucid Icons and Toast to Sonner
 import { RiCloseCircleLine } from "react-icons/ri";
+import toast from "react-hot-toast";
 
+interface Product {
+  _id: string;
+  name: string;
+  image: string;
+  price: number;
+  volume: string;
+  out_of_stock?: boolean;
+}
 
+interface User {
+  _id: string;
+  cart_id: string;
+  box_id: string;
+}
 
-const FreeProducts = (props) => {
-  console.log('pyoooooooooooo',props)
+interface FreeProductsProps {
+  data: Product[];
+  user: User;
+  fetchCart: () => void;
+  handleClose: () => void;
+}
+
+const FreeProducts = (props: FreeProductsProps) => {
+  console.log("pyoooooooooooo", props);
   const router = useRouter();
-  const scrollDivRef = useRef(null);
+  const scrollDivRef = useRef<HTMLDivElement | null>(null);
   const [isRestoringScroll, setIsRestoringScroll] = useState(true);
 
-  const handleCartAdd = async (id, p, v, oos) => {
+  const handleCartAdd = async (
+    id: string,
+    p: number,
+    v: string,
+    oos: boolean
+  ) => {
     const res = await fetch("/api/user/free-product", {
       method: "PUT",
       headers: {
@@ -28,7 +53,7 @@ const FreeProducts = (props) => {
         price: p,
         volume: v,
         out_of_stock: oos,
-        user_id: props.user._id
+        user_id: props.user._id,
       }),
     }).then((res) => res.json());
     if (res.success) {
@@ -45,7 +70,7 @@ const FreeProducts = (props) => {
       if (scrollDivRef.current) {
         sessionStorage.setItem(
           "scrollPosition",
-          scrollDivRef.current.scrollTop
+          scrollDivRef.current.scrollTop.toString()
         );
       }
     };
@@ -61,15 +86,16 @@ const FreeProducts = (props) => {
     const savedScrollPosition = sessionStorage.getItem("scrollPosition");
 
     if (savedScrollPosition !== null && scrollDivRef.current) {
-  
       setTimeout(() => {
-        scrollDivRef.current.scrollTop = parseInt(savedScrollPosition, 10);
-        setIsRestoringScroll(false); 
-      }, 0); 
+        if (scrollDivRef.current) {
+          scrollDivRef.current.scrollTop = parseInt(savedScrollPosition, 10);
+        }
+        setIsRestoringScroll(false);
+      }, 0);
     } else {
       setIsRestoringScroll(false);
     }
-  }, [props.data]); 
+  }, [props.data]);
 
   return (
     <div className="min-h-screen fixed top-0 right-0 w-full bg-black/60 flex flex-col justify-center items-center z-10">
@@ -88,14 +114,15 @@ const FreeProducts = (props) => {
             ref={scrollDivRef}
             className="my-5 flex flex-wrap py-2 h-[80vh] md:h-72 overflow-y-scroll overflow-x-hidden"
           >
-            {!isRestoringScroll && 
+            {!isRestoringScroll &&
               props.data.map((item, index) => (
                 <div key={index} className="w-full">
-                  <ProductItem
+                  {/* TODO: FIgure out the types here */}
+                  {/* <ProductItem
                     data={item}
                     handleCartAdd={handleCartAdd}
                     user={props.user}
-                  />
+                  /> */}
                   <hr className="bg-secondary text-white w-2/3 h-[2px] mx-auto" />
                 </div>
               ))}

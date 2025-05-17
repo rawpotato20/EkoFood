@@ -1,11 +1,9 @@
-import { parseCookies } from "nookies";
-import { useEffect, useState } from "react";
-import { FiEdit2, FiTrash } from "react-icons/fi";
-import { IoCloseCircleOutline } from "react-icons/io5";
-import DeleteProduct from "./delete-product";
-import ViewUser from "./view-user";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+//TODO: Nookies and Toast
+import { parseCookies } from "nookies";
+import toast from "react-hot-toast";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -16,29 +14,6 @@ const Orders = () => {
   const [loading2, setLoading2] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
-
-
-  const handleSync = async (id) => {
-    setSyncing(true);
-    const res = await fetch("/api/user/sync-listmonk", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: adminPassword,
-      },
-      body: JSON.stringify({
-        userId: id,
-      }),
-    }).then((res) => res.json());
-    if (res.success) {
-      toast.success(res.message);
-      setSyncing(false);
-      router.refresh();
-    } else {
-      toast.error(res.message);
-      setSyncing(false);
-    }
-  };
 
   const router = useRouter();
 
@@ -59,7 +34,7 @@ const Orders = () => {
       });
       const data = await res.json();
       console.log("Orders Fetch Response:", data);
-      
+
       if (data.success) {
         setOrders(data.data);
       } else {
@@ -70,41 +45,13 @@ const Orders = () => {
     }
   };
 
-  useEffect(() => {console.log('daaaaaa')
+  useEffect(() => {
+    console.log("daaaaaa");
     fetchOrders();
   }, [adminPassword]);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-  };
-
-  const filteredUsers = orders.filter(
-    (order) =>
-      order.order_id?.toLowerCase().includes(search.toLowerCase()) ||
-      order.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      order.user?.email?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleSubmit = async () => {
-    setLoading2(true);
-    const res = await fetch("/api/user/general", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: adminPassword,
-      },
-      body: JSON.stringify({
-        id: selectedData._id,
-      }),
-    }).then((res) => res.json());
-    if (res.success) {
-      toast.success(res.message);
-      setLoading2(false);
-      router.refresh();
-    } else {
-      toast.error(res.message);
-      setLoading2(false);
-    }
   };
 
   return (

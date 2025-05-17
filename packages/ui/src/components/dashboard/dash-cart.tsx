@@ -1,14 +1,43 @@
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CartItem from "./cart-item";
 import toast from "react-hot-toast";
-import { trackEventFunction } from "@/utils/general";
-import Countdown from "react-countdown";
+import { trackEventFunction } from "@/packages/utils/src/general";
 import FreeProducts from "./free-products";
+import { Product } from "../admin/edit-products";
 
-const DashCart = (props) => {
+//TODO: Consider alternatives for this
+import Countdown from "react-countdown";
+import type { CountdownRenderProps } from "react-countdown";
+
+interface CartItemData {
+  product_id: string;
+  quantity: number;
+  price: number;
+  volume: string;
+  is_free_product?: boolean;
+  product?: {
+    image: string;
+    name: string;
+  };
+}
+
+interface User {
+  cart_id: string;
+  box_id: string;
+  created_at: string;
+  active_delivery: boolean;
+}
+
+interface DashCartProps {
+  data: CartItemData[];
+  user: User;
+  products: Product[];
+  cart: any;
+  fetchCart: () => void;
+}
+
+const DashCart = (props: DashCartProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [freeProductsModal, setFreeProductsModal] = useState(false);
@@ -17,7 +46,7 @@ const DashCart = (props) => {
     setFreeProductsModal(!freeProductsModal);
   };
 
-  const handleCartMinus = async (id, p, v) => {
+  const handleCartMinus = async (id: string, p: number, v: string) => {
     const res = await fetch("/api/user/cart", {
       method: "DELETE",
       headers: {
@@ -39,9 +68,11 @@ const DashCart = (props) => {
       toast.error(res.message);
     }
   };
-   const createdAt = new Date(props.user.created_at);
-              const now = new Date();
-              const twentyFourHoursLater = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+  const createdAt = new Date(props.user.created_at);
+  const now = new Date();
+  const twentyFourHoursLater = new Date(
+    createdAt.getTime() + 24 * 60 * 60 * 1000
+  );
   return (
     <>
       <div className="w-full border-2 border-secondary px-2 md:px-5 pt-2 rounded-lg">
@@ -79,7 +110,13 @@ const DashCart = (props) => {
                       24 * 60 * 60 * 1000
                   )
                 }
-                renderer={({ days, hours, minutes, seconds, completed }) => {
+                renderer={({
+                  days,
+                  hours,
+                  minutes,
+                  seconds,
+                  completed,
+                }: CountdownRenderProps) => {
                   if (completed) {
                     return <span>Pasibaigė</span>;
                   } else {
@@ -116,15 +153,17 @@ const DashCart = (props) => {
           </div>
         )}
       </div>
-      {freeProductsModal && (
-        <FreeProducts
-          user={props.user}
-          data={props.products}
-          cart={props.cart}
-          fetchCart={props.fetchCart}
-          handleClose={handleFreeProductsModal}
-        />
-      )}
+      {freeProductsModal &&
+        true
+        //TODO: Figure the types out here
+        // <FreeProducts
+        //   user={props.user}
+        //   data={props.products}
+        //   cart={props.cart}
+        //   fetchCart={props.fetchCart}
+        //   handleClose={handleFreeProductsModal}
+        // />
+      }
     </>
   );
 };

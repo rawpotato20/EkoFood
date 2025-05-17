@@ -1,9 +1,9 @@
-const UpdateOrders = (props) => {
-    return (
-        <>
-            <div></div>
-        </>
-    );
+const UpdateOrders = () => {
+  return (
+    <>
+      <div></div>
+    </>
+  );
 };
 
 export default UpdateOrders;
